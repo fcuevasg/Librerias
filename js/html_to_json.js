@@ -1,4 +1,3 @@
-
 /**
  * Parsea un json a HTML.
  *
@@ -7,43 +6,69 @@
  * @param {object} json El json que se desea parsear.
  * @param {boolean} formato Si se quiere recibir un nodo (false) o el html del json (true)
  * 
+ * 
  */
-function html_to_json(json, formato) {
 
-    let tag = json.tag;
-    //console.log(tag);
-    let nodo = document.createElement(tag);
-    if (json.id) {
-        nodo.setAttribute("id", json.id);
+class htmlToJson {
+    constructor() {
+        this.json;
+        this.formato;
+    }
+    setJson(_json) {
+        this.json = _json;
+    }
+    getJson() {
+        return this.json;
     }
 
-    nodo.setAttribute("class", json.class);
-    if (json.title) {
-        nodo.setAttribute("title", json.title);
+    setFormato(_format) {
+        this.formato = _format;
     }
-    let contenido = json.content;
-    if (typeof contenido == "object") {
-        if (contenido.length) {
-            for (const key in contenido) {
-                //   console.log(key);
-                nodo.appendChild(html_to_json(contenido[key]))
-            }
-        } else {
-            nodo.appendChild(html_to_json(contenido));
+
+    createTag(_data) {
+
+        if (!_data) {
+            _data = this.json;
         }
-    } else {
-
-        nodo.innerHTML = json.content;
-        //  nodo.appendChild(document.createTextNode(json.content));
-    }
-
-
-    if (formato) {
-        return nodo.innerHTML;
-    } else {
+        let etiqueta = _data.tag;
+        let nodo = document.createElement(etiqueta);
+        if (_data.id) {
+            nodo.setAttribute("id", _data.id);
+        }
+        nodo.setAttribute("class", _data.class);
+        if (_data.title) {
+            nodo.setAttribute("title", _data.title);
+        }
         return nodo;
     }
 
 
+    parsehtmlToJson(_data = null) {
+        let nodo;
+        if (!_data) {
+            _data = this.json;
+        }
+        nodo = this.createTag(_data);
+        let contenido = _data.content;
+        if (typeof contenido == "object") {
+            console.log(contenido)
+            if (contenido.length) {
+                for (const key in contenido) {
+                    nodo.appendChild(this.parsehtmlToJson(contenido[key]))
+                }
+            } else {
+                nodo.appendChild(this.parsehtmlToJson(contenido));
+            }
+        } else {
+            nodo.innerHTML = contenido;
+        }
+
+        if (this.formato) {
+            return nodo.innerHTML;
+        } else {
+            return nodo;
+        }
+
+    }
 
 }
